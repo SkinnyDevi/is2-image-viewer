@@ -1,7 +1,9 @@
 package software.ulpgc.imageviewer.apps.swing;
 
 import software.ulpgc.imageviewer.adapters.ImageAdapter;
+import software.ulpgc.imageviewer.view.ImageCanvas;
 import software.ulpgc.imageviewer.view.ImageDisplay;
+import software.ulpgc.imageviewer.view.Scale;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,11 +11,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SwingImageDisplay extends JPanel implements ImageDisplay {
     private final ImageAdapter imageDeserializer;
     private final List<Paint> paintOrder = new ArrayList<>();
+    private final Map<software.ulpgc.imageviewer.model.Image, Image> swingImageCache = new HashMap<>();
     private ShiftEvent shiftEvent = ShiftEvent.Null;
     private ReleaseEvent releaseEvent = ReleaseEvent.Null;
     private int initialPressPosition;
@@ -22,6 +27,7 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
         this.imageDeserializer = imageDeserializer;
         this.addMouseListener(createMouseListener());
         this.addMouseMotionListener(createMouseMotionListener());
+        setDoubleBuffered(true);
     }
 
     private MouseListener createMouseListener() {
@@ -62,7 +68,8 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
     @Override
     public void paint(software.ulpgc.imageviewer.model.Image image, int offset) {
         paintOrder.add(new Paint(image, offset));
-        repaint();
+        Rectangle bounds = getBounds();
+        repaint(0, 0, bounds.width, bounds.height);
     }
 
     @Override
@@ -71,15 +78,34 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
         for (Paint paint : paintOrder) {
             Image image = adaptImage(paint.image);
-            g.drawImage(image, 0 + paint.offset(), 0, getWidth(), getHeight(), null);
+            ImageCanvas canvas = createImageCanvasFor(image);
+            drawImageInCanvas(g, paint, image, canvas);
         }
     }
 
+    private ImageCanvas createImageCanvasFor(Image image) {
+        return ImageCanvas.ofScale(new Scale(getWidth(), getHeight()))
+                .alignCenter(new Scale(image.getWidth(null), image.getHeight(null)));
+    }
+
+    private static void drawImageInCanvas(Graphics g, Paint paint, Image image, ImageCanvas canvas) {
+        g.drawImage(
+                image,
+                canvas.position().x() + paint.offset(),
+                canvas.position().y(),
+                canvas.scale().width(),
+                canvas.scale().height(),
+                null
+        );
+    }
+
     private Image adaptImage(software.ulpgc.imageviewer.model.Image image) {
-        return (Image) imageDeserializer.adapt(image);
+        return swingImageCache.computeIfAbsent(image, img -> (Image) imageDeserializer.adapt(img));
     }
 
     @Override
