@@ -1,5 +1,8 @@
 package software.ulpgc.imageviewer.view;
 
+import software.ulpgc.imageviewer.model.Position;
+import software.ulpgc.imageviewer.model.Scale;
+
 public record ImageCanvas(Position position, Scale scale) {
     public static ImageCanvas ofScale(Scale scale) {
         return new ImageCanvas(new Position(0, 0), scale);

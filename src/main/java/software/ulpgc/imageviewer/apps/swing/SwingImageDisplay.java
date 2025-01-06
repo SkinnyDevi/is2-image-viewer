@@ -3,7 +3,7 @@ package software.ulpgc.imageviewer.apps.swing;
 import software.ulpgc.imageviewer.adapters.ImageAdapter;
 import software.ulpgc.imageviewer.view.ImageCanvas;
 import software.ulpgc.imageviewer.view.ImageDisplay;
-import software.ulpgc.imageviewer.view.Scale;
+import software.ulpgc.imageviewer.model.Scale;
 
 import javax.swing.*;
 import java.awt.*;
