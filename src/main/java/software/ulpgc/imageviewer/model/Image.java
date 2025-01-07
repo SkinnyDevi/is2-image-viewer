@@ -4,6 +4,7 @@ public interface Image {
     Image next();
     Image previous();
     byte[] content();
+    int hashCode();
 
     enum Type {
         JPG, JPEG, PNG;

@@ -72,17 +72,22 @@ public class FileImageLoader implements ImageLoader {
             @Override
             public byte[] content() {
                 try {
-                    return Files.readAllBytes(fromPath(current()));
+                    return Files.readAllBytes(fromPath(this.file()));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            }
+
+            @Override
+            public int hashCode() {
+                return this.file().hashCode();
             }
 
             private Path fromPath(File file) {
                 return file.toPath();
             }
 
-            private File current() {
+            private File file() {
                 return imageFiles.get(index);
             }
         };
