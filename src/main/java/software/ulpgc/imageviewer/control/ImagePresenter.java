@@ -38,4 +38,22 @@ public class ImagePresenter {
         this.display.clear();
         this.display.paint(image, 0);
     }
+
+    public void presentNext() {
+        present(this.image.next());
+    }
+
+    public void presentPrevious() {
+        present(this.image.previous());
+    }
+
+    public void zoomIn() {
+        this.display.increaseZoomFactor();
+        repaint();
+    }
+
+    public void zoomOut() {
+        this.display.decreaseZoomFactor();
+        repaint();
+    }
 }

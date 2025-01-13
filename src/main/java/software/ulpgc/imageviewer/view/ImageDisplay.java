@@ -5,8 +5,10 @@ import software.ulpgc.imageviewer.model.Image;
 public interface ImageDisplay {
     void paint(Image image, int offset);
     int getWidth();
-
     void clear();
+    void increaseZoomFactor();
+    void decreaseZoomFactor();
+
     void on(ShiftEvent shift);
     void on(ReleaseEvent released);
 
